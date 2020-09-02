@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.starskyoio.dbstore.server.mapper.IDbStoreMapper">
+    <!--新增-->
+    <insert id="insert" parameterType="SqlParam">
+        INSERT INTO ${param.tableName}
+        <foreach collection="param.columnMap.keys" item="key" separator="," open="(" close=")">
+            ${key}
+        </foreach>
+        VALUES
+        <foreach collection="param.columnMap.keys" item="key" separator="," open="(" close=")">
+            #{param.columnMap[${key}]}
+        </foreach>
+    </insert>
+
+    <!--更新-->
+    <update id="update" parameterType="SqlParam">
+        UPDATE ${param.tableName}
+        <set>
+            <foreach collection="param.columnMap.keys" item="key" separator=",">
+                ${key}=#{param.columnMap[${key}]}
+            </foreach>
+        </set>
+        WHERE ${param.where}
+    </update>
+
+    <!--删除-->
+    <delete id="delete" parameterType="SqlParam">
+        DELETE FROM ${param.tableName} WHERE ${param.where}
+    </delete>
+
+    <!--查询单个记录-->
+    <select id="selectOne" parameterType="SqlParam" resultType="java.util.HashMap">
+        SELECT
+        <foreach collection="param.columnList" item="key" separator=",">
+            ${key}
+        </foreach>
+        FROM ${param.tableName}
+        <if test="param.where != null and param.where !=''">
+            WHERE ${param.where}
+        </if>
+    </select>
+
+    <!--查询多条记录-->
+    <select id="selectList" parameterType="SqlParam" resultType="java.util.HashMap">
+        SELECT
+        <foreach collection="param.columnList" item="key" separator=",">
+            ${key}
+        </foreach>
+        FROM ${param.tableName}
+        <if test="param.where != null and param.where !=''">
+            WHERE ${param.where}
+        </if>
+        <if test="param.orderBy != null and param.orderBy !=''">
+            ORDER BY ${param.orderBy}
+        </if>
+    </select>
+
+    <!--直接执行sql查询列表-->
+    <select id="selectListBySql" parameterType="SqlParam" resultType="java.util.HashMap">
+     ${param.sql}
+    </select>
+</mapper>
